@@ -11,6 +11,7 @@
 <br>
 [![Validate Skill](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml/badge.svg)](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F4C430.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/cclank/lanshu-create-ai-presenter-video)](https://github.com/cclank/lanshu-create-ai-presenter-video/releases/latest)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FFmpeg Required](https://img.shields.io/badge/FFmpeg-Required-007808?logo=ffmpeg&logoColor=white)](https://ffmpeg.org/)
 [![Node.js for the styled route](https://img.shields.io/badge/Node.js-styled_route-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
@@ -157,6 +158,8 @@ git clone https://github.com/cclank/lanshu-create-ai-presenter-video.git \
 ```
 
 Run `git pull` in the installed directory to update. If you use several harnesses, clone once into each skills directory.
+
+Tagged versions and a ready-to-extract skill ZIP are available in [Releases](https://github.com/cclank/lanshu-create-ai-presenter-video/releases). See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 **Agents without Agent Skills support.** Clone the repository anywhere, then start the session with:
 
@@ -323,7 +326,7 @@ CI runs metadata validation, a portability check, syntax checks for the explaine
 
 ## Contributing
 
-Issues and pull requests are welcome. Reports from different harnesses and providers are especially valuable, as are improvements to the workflow, compatibility, and quality checks. To add a tenth explainer style, follow the kit contract in [`explainer/KITS.md`](explainer/KITS.md) and the starter brief in [`explainer/STARTER-BRIEF.md`](explainer/STARTER-BRIEF.md).
+Issues and pull requests are welcome. Reports from different harnesses and providers are especially valuable, as are improvements to the workflow, compatibility, and quality checks. To add another explainer style, follow the kit contract in [`explainer/KITS.md`](explainer/KITS.md) and the starter brief in [`explainer/STARTER-BRIEF.md`](explainer/STARTER-BRIEF.md).
 
 ## Author
 

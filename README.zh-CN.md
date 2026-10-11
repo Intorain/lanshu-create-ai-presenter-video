@@ -11,6 +11,7 @@
 <br>
 [![Validate Skill](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml/badge.svg)](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-F4C430.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/cclank/lanshu-create-ai-presenter-video)](https://github.com/cclank/lanshu-create-ai-presenter-video/releases/latest)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FFmpeg Required](https://img.shields.io/badge/FFmpeg-Required-007808?logo=ffmpeg&logoColor=white)](https://ffmpeg.org/)
 [![Node.js for the styled route](https://img.shields.io/badge/Node.js-styled_route-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
@@ -144,6 +145,8 @@ git clone https://github.com/cclank/lanshu-create-ai-presenter-video.git \
 ```
 
 在安装目录执行 `git pull` 即可更新。同时使用多个 harness 时，每个 skills 目录各克隆一份。
+
+版本标签和可直接解压到 skills 目录的安装 ZIP 见 [Releases](https://github.com/cclank/lanshu-create-ai-presenter-video/releases)，版本记录见 [CHANGELOG.md](CHANGELOG.md)。
 
 **不支持 Agent Skills 的 agent**：把仓库克隆到任意位置，在对话开头告诉它：
 
@@ -307,7 +310,7 @@ bash tests/explainer_smoke.sh   # 风格化路线；还需要 Node.js 和 rsync
 
 ## 参与贡献
 
-欢迎提交 Issue 和 Pull Request。特别欢迎反馈在不同 harness、不同服务商下的使用情况，以及对工作流、兼容性和质量检查的改进。想新增第十种讲解风格，请参照 [`explainer/KITS.md`](explainer/KITS.md) 的风格包接口和 [`explainer/STARTER-BRIEF.md`](explainer/STARTER-BRIEF.md) 的起步模板说明。
+欢迎提交 Issue 和 Pull Request。特别欢迎反馈在不同 harness、不同服务商下的使用情况，以及对工作流、兼容性和质量检查的改进。想新增讲解风格，请参照 [`explainer/KITS.md`](explainer/KITS.md) 的风格包接口和 [`explainer/STARTER-BRIEF.md`](explainer/STARTER-BRIEF.md) 的起步模板说明。
 
 ## 作者
 
