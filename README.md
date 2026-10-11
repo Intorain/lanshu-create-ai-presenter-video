@@ -6,7 +6,7 @@
 ![Harness Neutral](https://img.shields.io/badge/Harness-Neutral-8B5CF6)
 ![Provider Neutral](https://img.shields.io/badge/Provider-Neutral-0EA5E9)
 ![Routes: Presenter | Styled](https://img.shields.io/badge/Routes-Presenter_%7C_Styled-0EA5E9)
-[![Explainer Styles: 9](https://img.shields.io/badge/Explainer_Styles-9-E8590C)](explainer/STYLES.md)
+[![Explainer Styles: 12](https://img.shields.io/badge/Explainer_Styles-12-E8590C)](explainer/STYLES.md)
 [![Rendered with HyperFrames](https://img.shields.io/badge/Rendered_with-HyperFrames-2563EB)](https://hyperframes.heygen.com)
 <br>
 [![Validate Skill](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml/badge.svg)](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml)
@@ -19,15 +19,15 @@
 [![X @LufzzLiz](https://img.shields.io/badge/X-@LufzzLiz-000000?logo=x&logoColor=white)](https://x.com/LufzzLiz)
 [![Author: 岚叔 Lanshu](https://img.shields.io/badge/Author-%E5%B2%9A%E5%8F%94_Lanshu-C2410C)](https://x.com/LufzzLiz)
 
-> Turn a topic or script into a verified, publish-ready explainer video — presented by a digital human from one authorized portrait, or acted out on screen in one of nine visual styles — driven by the coding agent you already use.
+> Turn a topic or script into a verified, publish-ready explainer video — presented by a digital human from one authorized portrait, or acted out on screen in one of twelve explainer styles — driven by the coding agent you already use.
 
-`lanshu-create-ai-presenter-video` is an [Agent Skill](https://agentskills.io) that takes an AI agent through the full production of an explainer video. On the **presenter route** that means script, narration, presenter generation, lip-sync, captions and keyword motion graphics, editing, rendering, and quality assurance. On the **styled route** the narration is performed scene by scene in one of nine visual styles, from a word-timed story to a rendered film. Every stage is gated by evidence on disk, and nothing is delivered until the output passes decode and loudness checks.
+`lanshu-create-ai-presenter-video` is an [Agent Skill](https://agentskills.io) that takes an AI agent through the full production of an explainer video. On the **presenter route** that means script, narration, presenter generation, lip-sync, captions and keyword motion graphics, editing, rendering, and quality assurance. On the **styled route** the narration is performed scene by scene in one of twelve styles (nine visual, three narrative), from a word-timed story to a rendered film. Every stage is gated by evidence on disk, and nothing is delivered until the output passes decode and loudness checks.
 
 ## Highlights
 
 - **Harness-neutral.** A standard `SKILL.md` that loads in Claude Code, Codex, Gemini CLI, Cursor, OpenCode, GitHub Copilot, and other Agent Skills clients. Any agent that can read files and run shell commands can follow it directly.
 - **Provider-neutral.** On the presenter route, voice, presenter video, lip-sync, and speech recognition are selected by capability at run time; each job records the provider, model, parameters, and task IDs it actually used. The styled route voices with MiniMax (word timestamps come from the voice engine) or takes narration you voiced or recorded elsewhere.
-- **Nine performed explainer styles.** Editorial, tech HUD, notebook, paper pop-up, pop comic, 3D one-take, drafting sheet, chalkboard, and clay town — each a reusable kit with a starter, so a new topic plays end to end in any style after a few commands, and the script is written for the chosen style.
+- **Twelve performed explainer styles.** Nine visual styles — editorial, tech HUD, notebook, paper pop-up, pop comic, 3D one-take, drafting sheet, chalkboard, and clay town — plus three narrative styles: derivation, casefile, and life-scene sitcom. Each has a reusable kit, starter, and example project.
 - **Audio-locked timeline.** The approved narration is the master clock for presenter motion, captions, cuts, and final duration, which keeps lip-sync and scene boundaries aligned.
 - **Evidence-gated workflow.** Eight production states, from `intake` to `verified`, computed from artifacts instead of declared by hand.
 - **Cost guardrails.** Pilot-first generation, an explicit billing statement before the first paid call, retry ceilings, and task-ID recovery to avoid duplicate charges.
@@ -38,14 +38,21 @@
 | Route | The video | You provide | Paid generation | Format |
 |---|---|---|---|---|
 | **Presenter** | A digital human presents; captions and keyword graphics support it | Topic or script + authorized portrait | Voice + presenter video | Any; 9:16 by default |
-| **Styled explainer** | No presenter: every narrated phrase is acted out on screen in one of nine visual styles | Topic or script (or your own recorded narration) | Voice only (none with your own narration) | 16:9 |
+| **Styled explainer** | No presenter: every narrated phrase is acted out on screen in one of twelve styles (nine visual, three narrative) | Topic or script (or your own recorded narration) | Voice only (none with your own narration) | 16:9 |
 
-The agent infers the route from your request or asks once, with the style gallery. The nine styles share one
-contract — word-timed captions, chapter chips, a performed closing line, a one-frame recap — and differ in how ideas are
-acted out: editorial paper, tech HUD, notebook and pen, paper pop-up book, pop comic, 3D one-take, drafting sheet,
-chalkboard, and a clay town. Below is the same moment of the bundled KV cache explainer in all nine:
+The agent infers the route from your request or asks once, with the style gallery. All styles share one contract —
+word-timed captions, chapter chips, a performed closing line, a one-frame recap. Nine are visual styles that differ in
+how ideas are acted out: editorial paper, tech HUD, notebook and pen, paper pop-up book, pop comic, 3D one-take,
+drafting sheet, chalkboard, and a clay town. Below is the same moment of the bundled KV cache explainer in all nine:
 
 ![The same moment of the KV cache explainer in nine styles](explainer/gallery/nine-styles-kv-cache.jpg)
+
+Three are narrative styles, where the look comes with a way of telling and the script can draw on its suggested arc: **推演**
+(derive it on one canvas, formulas and geometry bound by colour), **案卷** (investigate it on an evidence board, from the
+anomaly to the closed case) and **小剧场** (a life-scene sitcom: a misconception, a bill or a queue that shows the cause,
+one sentence that maps the analogy to the real term). Below is the same KV cache topic told the three ways:
+
+![The KV cache topic told in the three narrative styles](explainer/gallery/three-narrative-styles-kv-cache.jpg)
 
 A new topic becomes a playable draft in any style in a few commands — narration, word timing, captions, chapters,
 closing line, recap, and sound are generated; the agent then performs each line's scene. See
@@ -92,7 +99,7 @@ Master, share copy, contact sheet, and delivery report
 Styled route:
 
 ```text
-Topic or script ──► choose a style (menu + gallery, or drafts in all nine)
+Topic or script ──► choose a style (menu + galleries, or drafts in the nine visual styles)
         │
         ▼
 Script written for the style ──► voice with word timestamps (or your own narration)
@@ -165,7 +172,7 @@ Most harnesses select the skill automatically from its description, so you can d
 Turn this script and portrait into a 30-second 16:9 presenter video with live captions.
 ```
 
-For a styled explainer you don't need to know the styles yet — ask, and the agent shows the nine with a picture and
+For a styled explainer you don't need to know the styles yet — ask, and the agent shows the twelve with pictures and
 recommends a few for your topic:
 
 ```text
@@ -228,7 +235,7 @@ Under `explainer/tools/`, used on the styled route:
 | Tool | Purpose |
 |---|---|
 | `story.py` | `script.md` → MiniMax voice per line with the engine's word timestamps → `story.json`; `--audio` for your own narration, `--dry` for a silent draft, `--check` for the plan and estimated length. |
-| `new_film.sh` / `new_topic.sh` | A playable film from a style's starter (or drafts in all nine styles at once). |
+| `new_film.sh` / `new_topic.sh` | A playable film from a style's starter (or drafts in the nine visual styles at once). |
 | `docs.py` | Script, beat sheet, timeline, and a storyboard table from the story. |
 | `qa.py` | `hyperframes check`, snapshots at every chapter, stillness pairs, a cover frame, and a composition report. |
 | `render.sh` | Render, finalize with `finalize_delivery.sh`, write subtitles (SRT); `DRAFT=1` makes a 720p review copy for a phone. |
@@ -261,7 +268,7 @@ lanshu-create-ai-presenter-video/
 │   └── job.template.json    # Job manifest template
 ├── references/              # Stage guides loaded on demand
 ├── scripts/                 # Job setup, gates, segment planning, delivery
-├── explainer/               # Styled explainer engine: core runtime, nine style kits + starters, tools, examples
+├── explainer/               # Styled explainer engine: core runtime, twelve style kits + starters, tools, examples
 │   ├── STYLES.md            # Style chooser with the gallery
 │   ├── KITS.md              # The kit contract and tools
 │   ├── kits/<style>/        # One look per style, and starter/ = the film minus the topic
@@ -292,7 +299,7 @@ lanshu-create-ai-presenter-video/
 - When a provider caps duration, the quote uses the total requested seconds from the segment plan.
 - Interrupted remote tasks are polled by their saved task ID before any resubmission.
 - Work stops after three rejected paid candidates, with a summary of the recurring failure and remaining options.
-- On the styled route the only paid call is the voice — one call per line, cached, so an edit re-voices only that line; drafts in all nine styles cost nothing more.
+- On the styled route the only paid call is the voice — one call per line, cached, so an edit re-voices only that line; drafts in the nine visual styles cost nothing more.
 
 ## Privacy
 

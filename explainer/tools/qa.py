@@ -52,8 +52,11 @@ def diff(a, b):
 
 
 def snapshot(project, times, out):
-    subprocess.run(["npx", "--yes", HF, "snapshot", str(project), "--at", ",".join(f"{t:g}" for t in times),
-                    "--no-end", "--describe", "false", "-o", str(out)], check=True, capture_output=True)
+    result = subprocess.run(["npx", "--yes", HF, "snapshot", str(project), "--at", ",".join(f"{t:g}" for t in times),
+                             "--no-end", "--describe", "false", "-o", str(out)], capture_output=True, text=True)
+    if result.returncode:
+        sys.stderr.write(result.stdout + result.stderr)
+        result.check_returncode()
     shots = sorted(out.glob("frame-*.png"))
     return {float(re.search(r"-at-([\d.]+)s", p.name).group(1)): p for p in shots}
 

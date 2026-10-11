@@ -1,6 +1,7 @@
-# Explainer styles: nine style kits, one contract
+# Explainer styles: twelve style kits, one contract
 
-Nine visual languages for one narrated explainer, each turned into a **kit** that works for any topic. They were
+Twelve styles for one narrated explainer — nine visual languages and three narrative styles (推演, 案卷, 小剧场: a look
+that comes with a way of telling) — each turned into a **kit** that works for any topic. They were
 proved on two topics (HF Storage, not bundled, and KV cache, bundled under `examples/`); the starters make a new topic
 a few commands. This file is the engine reference; the workflow lives in `../references/styled-explainer.md`, the style
 chooser in `STYLES.md`.
@@ -13,7 +14,7 @@ explainer/
   stories/<topic>/    script.md → story.json (bundled: kv-cache, _test-dry)
   examples/kv-cache/<style>/   the finished KV cache film per style (the source of every STARTER.md idiom)
   tools/story.py      script.md → voice → word times → story.json  (--audio for your own narration, --dry for a draft)
-  tools/new_film.sh   a playable film for any story in any style;  new_topic.sh = all nine at once
+  tools/new_film.sh   a playable film for any story in any style;  new_topic.sh = the nine visual styles at once
   tools/docs.py       SCRIPT / BEAT_SHEET / TIMELINE / STORYBOARD documents from the story
   tools/qa.py         check + snapshots + stillness + cover.png → composition.json (one command)
   tools/render.sh     render + finalize + SRT + freeze log  (DRAFT=1: a 720p review copy for a phone)
@@ -22,7 +23,9 @@ explainer/
 ```
 
 Style keys (= kit folder names): `v1-editorial`, `v2-signal`, `v3-notebook`, `v4-paper`, `v5-comic`,
-`v6-cinematic`, `v7-drafting`, `v8-chalkboard`, `v9-clay`.
+`v6-cinematic`, `v7-drafting`, `v8-chalkboard`, `v9-clay`; the narrative styles `v10-reasoning`, `v11-casefile`,
+`v12-sitcom` (their KV films use the stories `kv-cache-reasoning`, `kv-cache-casefile`, `kv-cache-sitcom`, the same topic
+written in each style's arc).
 
 ## 1. The kit contract
 
@@ -135,7 +138,7 @@ python3 $X/tools/story.py <story> --dry               # optional: silent draft w
 python3 $X/tools/story.py <story>                     # MiniMax voice per line (cached), word timestamps from the engine
 python3 $X/tools/story.py <story> --audio narr.wav    # …or time a narration you voiced yourself (any TTS or a recording)
 # 2. a playable film in any style, end to end (captions, chapter chip, closing line, recap, sound bed, a placeholder beat per line)
-bash $X/tools/new_film.sh <style> <story> <project>   # or new_topic.sh <story> to try all nine
+bash $X/tools/new_film.sh <style> <story> <project>   # or new_topic.sh <story> to try the nine visual styles
 # 3. replace the placeholders in <project>/beats.js with the performed scenes (kits/<style>/starter/STARTER.md)
 python3 $X/tools/fonts.py <project> && (cd <project> && bash tools/sfx.sh && npx --yes hyperframes@0.8.81 check)
 bash $X/tools/render.sh <project> <name> [out-dir]
@@ -194,6 +197,18 @@ up to 8 chapters × 5 lines, no end / no recap) — `check` 0 errors, stillness 
 | V7 drafting | figures (1–2 lines each) on one sheet, snake grid | construction-line box: note typed, phrases on a time ruler | lands per figure, rides a leader to the next, pull back to the sheet |
 | V8 chalkboard | panels round the board (2 lines per page) | chalk frame, note underlined as spoken, timing ruler | page to page with a zoom-out, masthead last, whole-board pull back, mind map |
 | V9 clay | a pastel plot of the clay town per chapter | clay type tiles drop in per spoken unit, 「待演绎」 slip | plot to plot, pull back to the town for the recap |
+
+### The three narrative starters (built and verified 2026-10-08)
+
+Built the same way, each with a finished film of its own KV story (`stories/kv-cache-reasoning`, `-casefile`,
+`-sitcom`). `new_topic.sh` builds them only when named. Verified on their KV story, `kv-cache`, `_test-dry`, an
+8-chapter dry story and stories without `end` / `recap` — `check` 0 errors, stillness > 0.001 everywhere.
+
+| style | a station is… | draft beat (`placeholder`) | camera |
+| --- | --- | --- | --- |
+| V10 reasoning | a 1920×1080 region of one ink-blue canvas per chapter, snake grid | the chapter's statement written on; the beat note set as a derivation step, terms lit in their binding colour as spoken | glides along ⇒ arrows between stations, drifts toward the spoken line, pulls back to the whole canvas; recap = a proof spine beside the canvas |
+| V11 casefile | a region of one cork board per chapter, snake grid | an index card per line (「线索 n」), the beat note typed on as spoken, red string card to card, a blue 「待演绎」 stamp | leans to each new card, rides the red string between stations, pulls back to the whole board; recap = case folder + point cards over the dimmed board |
+| V12 sitcom | a sitcom set per chapter, side by side (shop / office / lobby / library dressing) | a stand-in says the beat note in a speech bubble, lit as spoken; the other stand-in reacts | dolly truck set to set, a shift per line, drift + push in between; curtain-call recap |
 
 Common follow-ups the agents noted: long-caption wrapping is done four ways (V1/V2 `.kit-caps-wrap`, V5
 `Kit.wrapCaptions`, V6 `Kit.captions({wrap})`, V3/V9 starter CSS) — fold into one core option next time; the

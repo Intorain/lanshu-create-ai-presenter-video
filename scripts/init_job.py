@@ -47,6 +47,9 @@ STYLES = (
     "v7-drafting",
     "v8-chalkboard",
     "v9-clay",
+    "v10-reasoning",
+    "v11-casefile",
+    "v12-sitcom",
 )
 
 

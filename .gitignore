@@ -17,3 +17,6 @@ renders/
 *.wav
 *.mp3
 _work/
+
+# Voice caches of the bundled stories (story.py regenerates them; only script.md, story.json, STORYBOARD.md are kept)
+explainer/stories/*/audio/

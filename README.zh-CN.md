@@ -6,7 +6,7 @@
 ![Harness Neutral](https://img.shields.io/badge/Harness-Neutral-8B5CF6)
 ![Provider Neutral](https://img.shields.io/badge/Provider-Neutral-0EA5E9)
 ![Routes: Presenter | Styled](https://img.shields.io/badge/Routes-Presenter_%7C_Styled-0EA5E9)
-[![讲解风格 9 种](https://img.shields.io/badge/%E8%AE%B2%E8%A7%A3%E9%A3%8E%E6%A0%BC-9%20%E7%A7%8D-E8590C)](explainer/STYLES.md)
+[![讲解风格 12 种](https://img.shields.io/badge/%E8%AE%B2%E8%A7%A3%E9%A3%8E%E6%A0%BC-12%20%E7%A7%8D-E8590C)](explainer/STYLES.md)
 [![Rendered with HyperFrames](https://img.shields.io/badge/Rendered_with-HyperFrames-2563EB)](https://hyperframes.heygen.com)
 <br>
 [![Validate Skill](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml/badge.svg)](https://github.com/cclank/lanshu-create-ai-presenter-video/actions/workflows/validate.yml)
@@ -19,15 +19,15 @@
 [![X @LufzzLiz](https://img.shields.io/badge/X-@LufzzLiz-000000?logo=x&logoColor=white)](https://x.com/LufzzLiz)
 [![作者 岚叔](https://img.shields.io/badge/%E4%BD%9C%E8%80%85-%E5%B2%9A%E5%8F%94-C2410C)](https://x.com/LufzzLiz)
 
-> 一个主题或一份文案，交给你正在用的 AI agent，产出一条经过验收、可直接发布的讲解视频：可以由数字人出镜讲解（需要一张授权人物图），也可以用九种视觉风格之一把内容“演”出来。
+> 一个主题或一份文案，交给你正在用的 AI agent，产出一条经过验收、可直接发布的讲解视频：可以由数字人出镜讲解（需要一张授权人物图），也可以用十二种讲解风格之一把内容“演”出来。
 
-`lanshu-create-ai-presenter-video` 是一个 [Agent Skill](https://agentskills.io)（岚叔 · 通用数字人与讲解视频制作），带领 AI agent 走完讲解视频的全流程。**数字人路线**包括文案、配音、人物生成、口型同步、字幕与关键词动效、剪辑、渲染和质量验收；**风格化路线**从逐字对时的讲稿出发，用九种视觉风格之一把每句讲解演成画面，一直到渲染成片。每个阶段都以磁盘上的产物为准入证据，成片在通过完整解码和响度检查之前不会交付。
+`lanshu-create-ai-presenter-video` 是一个 [Agent Skill](https://agentskills.io)（岚叔 · 通用数字人与讲解视频制作），带领 AI agent 走完讲解视频的全流程。**数字人路线**包括文案、配音、人物生成、口型同步、字幕与关键词动效、剪辑、渲染和质量验收；**风格化路线**从逐字对时的讲稿出发，用十二种风格之一（九种画风、三种讲法）把每句讲解演成画面，一直到渲染成片。每个阶段都以磁盘上的产物为准入证据，成片在通过完整解码和响度检查之前不会交付。
 
 ## 核心特性
 
 - **不绑定 harness**：标准 `SKILL.md`，可在 Claude Code、Codex、Gemini CLI、Cursor、OpenCode、GitHub Copilot 等支持 Agent Skills 的工具中直接加载；任何能读文件、执行 shell 命令的 agent 也能照着执行。
 - **不绑定服务商**：数字人路线的配音、数字人视频、口型同步和语音识别都按能力在运行时选型，每个任务记录实际使用的服务商、模型、参数和任务 ID。风格化路线用 MiniMax 配音（逐字时间直接取自配音引擎），也可以用你在别处配好或自己录的配音。
-- **九种可演绎的讲解风格**：设计师留白、科技感信号、手帐、纸艺立体书、波普漫画、3D 一镜到底、图纸与注脚、黑板报、黏土小城。每种都是可复用的风格包和起步模板，换一个题目几条命令就能完整播放，讲稿也按所选风格来写。
+- **十二种可演绎的讲解风格**：九种画风（设计师留白、科技感信号、手帐、纸艺立体书、波普漫画、3D 一镜到底、图纸与注脚、黑板报、黏土小城）加三种讲法（推演、案卷、小剧场）。每种都是可复用的风格包和起步模板，换一个题目几条命令就能完整播放，讲稿也按所选风格来写。
 - **配音锁定时间轴**：审定后的完整配音是人物动作、字幕、剪辑点和成片时长的统一时钟，保证口型与段落边界对齐。
 - **证据驱动的阶段**：从 `intake` 到 `verified` 共八个阶段，状态由产物计算得出，而不是手工声明。
 - **成本护栏**：先做低成本试片；首次付费调用前明确报价；设置重试上限；任务中断时凭任务 ID 恢复，避免重复扣费。
@@ -38,11 +38,15 @@
 | 路线 | 成片 | 你提供 | 付费生成 | 画幅 |
 |---|---|---|---|---|
 | **数字人讲解** | 数字人出镜讲解，字幕和关键词动效辅助 | 主题或文案 + 授权人物图 | 配音 + 数字人视频 | 任意，默认 9:16 竖屏 |
-| **风格化讲解** | 不用数字人：每一句讲解都用画面“演”出来，九种视觉风格可选 | 主题或文案（也可以用你自己录好的配音） | 只有配音（自带配音则不花钱） | 16:9 横屏 |
+| **风格化讲解** | 不用数字人：每一句讲解都用画面“演”出来，十二种风格可选（九种画风 + 三种讲法） | 主题或文案（也可以用你自己录好的配音） | 只有配音（自带配音则不花钱） | 16:9 横屏 |
 
-agent 会根据你的需求判断路线；拿不准时会带着风格图只问一次。九种风格共用一套接口（逐字字幕、章节条、结尾金句、一帧复习图），区别在于用什么画面把内容演出来：设计师留白、科技感信号、手帐、纸艺立体书、波普漫画、3D 一镜到底、图纸与注脚、黑板报、黏土小城。下图是仓库自带的 KV cache 讲解片在九种风格里的同一时刻：
+agent 会根据你的需求判断路线；拿不准时会带着风格图只问一次。所有风格共用一套接口（逐字字幕、章节条、结尾金句、一帧复习图）。其中九种是画风，区别在于用什么画面把内容演出来：设计师留白、科技感信号、手帐、纸艺立体书、波普漫画、3D 一镜到底、图纸与注脚、黑板报、黏土小城。下图是仓库自带的 KV cache 讲解片在九种画风里的同一时刻：
 
 ![KV cache 讲解片在九种风格里的同一时刻](explainer/gallery/nine-styles-kv-cache.jpg)
+
+另外三种是讲法，画面自带一种讲述方式，写稿时可以参考并调整它的叙事结构：**推演**（在一张画布上把图形和公式一步步推出来，颜色把符号和图形绑在一起）、**案卷**（在调查板上从一起异常查到结案）、**小剧场**（生活场景小剧场：角色遇到误区，用账单、队列或实物对照找到原因，一句话把比喻对上真名）。下图是同一个 KV cache 难题用三种讲法讲：
+
+![同一个 KV cache 难题的三种讲法](explainer/gallery/three-narrative-styles-kv-cache.jpg)
 
 换一个新题目，几条命令就能在任一风格里得到一版能完整播放的初稿：配音、逐字时间、字幕、章节、结尾金句、复习页和音效都自动生成，agent 再把每句话的画面演绎出来。选风格看 [`explainer/STYLES.md`](explainer/STYLES.md)，完整流程看 [`references/styled-explainer.md`](references/styled-explainer.md)，里面也写了想把自己的数字人融进风格片时的做法（可选）。
 
@@ -85,7 +89,7 @@ agent 会根据你的需求判断路线；拿不准时会带着风格图只问�
 风格化路线：
 
 ```text
-主题或文案 ──► 选风格（风格菜单 + 效果图，或九种都出草稿再挑）
+主题或文案 ──► 选风格（风格菜单 + 效果图，或九种画风都出草稿再挑）
         │
         ▼
 按风格写讲稿 ──► 配音并取得逐字时间（或用你自己的配音）
@@ -155,7 +159,7 @@ git clone https://github.com/cclank/lanshu-create-ai-presenter-video.git \
 把这份文案和人物图做成一条 16:9、30 秒、有实时字幕的数字人讲解视频。
 ```
 
-做风格化讲解时不用先知道有哪些风格，直接问就行，agent 会带着效果图列出九种风格，并推荐适合你题目的几种：
+做风格化讲解时不用先知道有哪些风格，直接问就行，agent 会带着效果图列出十二种风格，并推荐适合你题目的几种：
 
 ```text
 不要真人，做一个 40 秒讲 RAG 的讲解视频，有哪些风格可以选？
@@ -217,11 +221,11 @@ bash "$X/tools/render.sh" film rag outputs     # 母版、分享版、字幕
 | 工具 | 用途 |
 |---|---|
 | `story.py` | `script.md` → MiniMax 逐句配音并取得引擎返回的逐字时间 → `story.json`；`--audio` 使用你自己的配音，`--dry` 生成无声草稿，`--check` 查看结构与预计时长。 |
-| `new_film.sh` / `new_topic.sh` | 用风格起步模板生成能完整播放的片子（或一次生成九种风格的草稿）。 |
+| `new_film.sh` / `new_topic.sh` | 用风格起步模板生成能完整播放的片子（或一次生成九种画风的草稿）。 |
 | `docs.py` | 从讲稿生成文案、节拍表、时间轴和分镜表。 |
 | `qa.py` | 运行 `hyperframes check`，截取每章画面，做静止检测，导出封面图和合成报告。 |
 | `render.sh` | 渲染，调用 `finalize_delivery.sh` 交付，生成 SRT 字幕；`DRAFT=1` 输出可发到手机上看的 720p 审片版。 |
-| `srt.py`、`still_grid.py`、`fonts.py`、`sync.sh`、`stamp.py` | 字幕、九种风格对比图、字体子集，以及工程同步。 |
+| `srt.py`、`still_grid.py`、`fonts.py`、`sync.sh`、`stamp.py` | 字幕、风格对比图、字体子集，以及工程同步。 |
 
 ## 参考文档
 
@@ -250,7 +254,7 @@ lanshu-create-ai-presenter-video/
 │   └── job.template.json    # 任务清单模板
 ├── references/              # 按阶段加载的参考文档
 ├── scripts/                 # 任务初始化、闸门、分段规划与交付
-├── explainer/               # 风格化讲解引擎：核心运行时、九种风格包与起步模板、工具、示例
+├── explainer/               # 风格化讲解引擎：核心运行时、十二种风格包与起步模板、工具、示例
 │   ├── STYLES.md            # 风格选择指南（含效果图）
 │   ├── KITS.md              # 风格包接口与工具
 │   ├── kits/<style>/        # 每种风格的视觉，starter/ 是去掉题目的起步模板
@@ -281,7 +285,7 @@ lanshu-create-ai-presenter-video/
 - 服务商有时长上限时，按分段计划的总请求秒数报价。
 - 远程任务中断后，先用已保存的任务 ID 查询，再考虑重新提交。
 - 连续三个付费候选被否决后停止，并总结反复出现的问题和剩余选项。
-- 风格化路线唯一的付费调用是配音：每句一次并缓存，改一句只重配那一句；九种风格的草稿不会产生额外费用。
+- 风格化路线唯一的付费调用是配音：每句一次并缓存，改一句只重配那一句；九种画风的草稿不会产生额外费用。
 
 ## 隐私
 

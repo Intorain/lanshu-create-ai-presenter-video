@@ -1,28 +1,29 @@
 ---
 name: lanshu-create-ai-presenter-video
-description: Turn a topic or finished script into a complete, publish-ready explainer video — led by an AI presenter from an authorized adult presenter image, or performed in one of nine visual explainer styles with no presenter. Not for promos, ads, or footage montages. Use for new presenter or styled explainer videos and for continuing, revising, captioning, lip-sync repairing, or re-exporting an existing job. Use it whenever the user asks for 数字人口播 / 数字人讲解, for a 讲解视频 / 动画讲解 / 科普视频, asks which styles or templates are available (有哪些风格 / 看看风格 / 风格模板), or names one of the nine styles: 留白, 信号/科技感, 手帐/手绘, 立体书/纸艺, 波普漫画, 一镜到底/3D, 图纸与注脚, 黑板报, 黏土小城. Keep model and provider selection capability-based and record the actual choices per job.
+description: >-
+  Turn a topic or finished script into a complete, publish-ready explainer video — led by an AI presenter from an authorized adult presenter image, or performed with no presenter in one of twelve explainer styles (nine visual styles and three narrative ones). Not for promos, ads, or footage montages. Use for new presenter or styled explainer videos and for continuing, revising, captioning, lip-sync repairing, or re-exporting an existing job. Use it whenever the user asks for 数字人口播 / 数字人讲解, for a 讲解视频 / 动画讲解 / 科普视频, asks which styles or templates are available (有哪些风格 / 看看风格 / 风格模板), or names one of the styles: 留白, 信号/科技感, 手帐/手绘, 立体书/纸艺, 波普漫画, 一镜到底/3D, 图纸与注脚, 黑板报, 黏土小城, 推演/动态图解, 案卷/调查复盘, 小剧场/生活场景. Keep model and provider selection capability-based and record the actual choices per job.
 license: MIT
 compatibility: Works in any Agent Skills harness or shell-capable coding agent. Requires Python 3.9+, FFmpeg with ffprobe, bash, and jq; remote voice and presenter generation need network access and provider credentials. The styled explainer route also needs Node.js (npx) and rsync.
 ---
 
 # Lanshu Create AI Presenter Video
 
-Produce a verified explainer video from minimal inputs — led by a digital human, or performed in one of nine visual styles. The final narration is the master clock for presenter motion, captions, graphics, cuts, and delivery duration.
+Produce a verified explainer video from minimal inputs — led by a digital human, or performed in one of twelve explainer styles. The final narration is the master clock for presenter motion, captions, graphics, cuts, and delivery duration.
 
 ## Choose a route
 
 Every job takes one of two routes, recorded as `creative.route`. Infer it when the request is clear (cues below);
-otherwise ask once, with this table and the style gallery (`explainer/STYLES.md`; attach or link the image
-`explainer/gallery/nine-styles-kv-cache.jpg`). Never fall back to `presenter` silently: it needs a portrait the user
+otherwise ask once, with this table and the style gallery (`explainer/STYLES.md`; attach or link the images
+`explainer/gallery/nine-styles-kv-cache.jpg` and `explainer/gallery/three-narrative-styles-kv-cache.jpg`). Never fall back to `presenter` silently: it needs a portrait the user
 may not have.
 
 | Route | The video | The user provides | Paid generation | Format |
 |---|---|---|---|---|
 | `presenter` | A digital human presents; captions and keyword graphics support it | Topic or script + authorized presenter image | Voice + presenter video | Any; 9:16 by default |
-| `styled` | A performed explainer: every narrated phrase is acted out on screen in one of nine visual styles, no presenter | Topic or script | Voice only | 16:9 |
+| `styled` | A performed explainer: every narrated phrase is acted out on screen in one of twelve styles (nine visual, three narrative), no presenter | Topic or script | Voice only | 16:9 |
 
 - A presenter image or the words 数字人 / presenter / 口播 / 真人出镜 point to `presenter`; 不要真人 / "no presenter" /
-  "faceless", a named style, or 动画讲解 / 手绘 / 黑板 / 黏土 / 漫画 point to `styled`.
+  "faceless", a named style, or 动画讲解 / 手绘 / 黑板 / 黏土 / 漫画 / 推导 / 复盘 / 小剧场 point to `styled`.
 - A vertical platform (抖音 / 视频号 / 小红书 / 竖屏 / 9:16) is a format request, not a route: `styled` is 16:9 only.
   If it comes with no portrait or with styled cues, ask (a 16:9 styled film vs a 9:16 presenter video) instead of
   switching routes.
@@ -33,11 +34,14 @@ may not have.
   `story.json` in the new style, and re-approve the storyboard. Ask which job when it is not obvious.
 - This skill makes explainers. For 宣传片 / 广告 / 发布大片 / footage edits, say so, and offer a product explainer only
   if the user wants one.
-- For `styled` also choose `creative.explainer_style` (`v1-editorial` … `v9-clay`). Recommend two or three from the
-  topic and audience (one reason each) using `explainer/STYLES.md`; when the user is unsure, build drafts in all nine
-  (no extra paid calls once the audio is locked, or with `--dry`) and let them pick from a still grid. Settle the style
-  before the script is locked: each style shapes how the narration is written and voiced (`explainer/STYLES.md`,
-  "按风格写稿"). To compare styles first, use `--dry` drafts of a first script, then adapt it to the chosen style.
+- For `styled` also choose `creative.explainer_style` (`v1-editorial` … `v12-sitcom`). Recommend two or three from the
+  topic and audience (one reason each) using `explainer/STYLES.md`; when the user is unsure, build drafts in the nine
+  visual styles (no extra paid calls once the audio is locked, or with `--dry`) and let them pick from a still grid.
+  Settle the style before the script is locked: each style shapes how the narration is written and voiced
+  (`explainer/STYLES.md`, "按风格写稿"). The three narrative styles (`v10-reasoning` 推演, `v11-casefile` 案卷,
+  `v12-sitcom` 小剧场) go further: use the style's suggested arc when it helps the explanation, adapting chapters and
+  order to the topic. The examples are starting points; keep room for other storytelling choices. To compare
+  styles first, use `--dry` drafts of a first script, then adapt it to the chosen style.
 - `styled` follows [styled-explainer.md](references/styled-explainer.md) and reuses this skill's job directory, state
   machine, approvals, and delivery checks. The styles are designed to carry the explanation on their own; if a user
   also wants their digital human in a styled film, that file describes the method (time the film to the presenter's
@@ -48,10 +52,10 @@ How to ask, when the request leaves the choice open — one message, in the user
 1. The two routes, one line each: what the video looks like, what the user must provide, what is paid, and the
    format (presenter: any ratio, 9:16 by default; styled: 16:9 only). Recommend one for this topic and say why (e.g. "no portrait yet, or a concept that needs to be shown → styled"; "personal brand,
    talking to camera → presenter").
-2. For `styled`, assume the user does not know the styles yet: show the whole menu — the gallery image plus the nine
-   one-line entries of "风格菜单" in `explainer/STYLES.md` — and mark the two or three that fit this topic and audience,
-   one reason each. Offer "build drafts in all nine and pick from a still grid" as the alternative. Do the same,
-   without the route table, when the user only asks which styles there are.
+2. For `styled`, assume the user does not know the styles yet: show the whole menu — the two gallery images plus the
+   twelve one-line entries of "风格菜单" in `explainer/STYLES.md` — and mark the two or three that fit this topic and
+   audience, one reason each. Offer "build drafts in the nine visual styles and pick from a still grid" as the
+   alternative. Do the same, without the route table, when the user only asks which styles there are.
 3. Proceed with the recommendation if the user agrees or does not mind; record the choice in `job.json`.
 
 ## Required outcome

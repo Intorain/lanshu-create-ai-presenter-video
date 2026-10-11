@@ -16,6 +16,7 @@ script.md (see stories/kv-cache/script.md for a full example):
   subtitle: 用显存换速度，只算新的那一个
   voice: Chinese (Mandarin)_Reliable_Executive      # optional, these are the defaults
   speed: 1.1
+  pronounce: 攒竹/(cuan2)(zhu2)                      # optional: readings for polyphones / terms (';' between)
   ---
   ## problem | 问题：越写越慢                         # a chapter: key | chip title
   大模型回答问题，是一个 token 一个 token 往外蹦的。    # one narration line per text line
@@ -37,6 +38,8 @@ Voice and word timing: MiniMax T2A (env MINIMAX_API_KEY, never printed; MINIMAX_
 voices one line per call and returns each word's timestamps (subtitle_type "word"), so word times come from the voice
 engine itself — no speech-recognition model is needed. It also returns how each line was read (audio/pronounce.txt).
 Cache: audio/tts/<key>.mp3 + .json by (model, voice, speed, text) — edit one line and only that line is re-voiced.
+Pauses: `<#0.5#>` inside a line is a pause of that many seconds in the voice (e.g. slow counts for a follow-along:
+「一<#0.5#>二<#0.5#>三」); captions and the film see the line without the markers.
 Own narration (--audio): lines are placed at the recording's pauses and words spread by their speaking weight —
 good for captions, approximate (about 0.15 s) for word-timed beats; story.timing says "estimated".
 """
@@ -53,6 +56,29 @@ RESERVED = {"end", "recap", "facts"}
 cjk = lambda c: "一" <= c <= "鿿"
 UNIT = re.compile(r"[A-Za-z]+|\d+(?:\.\d+)?[A-Za-z]*|[一-鿿]|[^\sA-Za-z\d一-鿿]")
 FIELD = re.compile(r"^([a-z_]+):\s*(.*)$")
+PAUSE = re.compile(r"<#(\d+(?:\.\d+)?)#>")   # MiniMax pause marker: <#seconds#>
+
+
+def shown(raw):
+    """a line as captions and the film show it: the pause markers removed"""
+    return PAUSE.sub("", raw)
+
+
+def pause_time(raw):
+    return sum(float(x) for x in PAUSE.findall(raw))
+
+
+def line_weight(raw):
+    """estimated speaking time of a line: units by weight, a syllable held before a pause (a count) about 0.6 s,
+    plus the pauses themselves"""
+    chunks = PAUSE.split(raw)[::2]
+    total = 0.0
+    for k, chunk in enumerate(chunks):
+        ws = [weight(u) for u in UNIT.findall(chunk)]
+        if k + 1 < len(chunks) and ws:
+            ws[-1] = max(ws[-1], 0.6)
+        total += sum(ws)
+    return total + pause_time(raw)
 
 
 # ---------------------------------------------------------------- script.md
@@ -118,24 +144,30 @@ def probe(path):
     return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path]).decode())
 
 
-def tts(text, voice, speed, out_mp3, out_json):
-    """one MiniMax call: the line's audio, plus its word timestamps and the text as it was read"""
+def tts(text, voice, speed, out_mp3, out_json, pronounce=()):
+    """one MiniMax call: the line's audio, plus its word timestamps and the text as it was read.
+    pronounce: MiniMax pronunciation entries such as "攒竹/(cuan2)(zhu2)" for polyphones and terms"""
     key = os.environ.get("MINIMAX_API_KEY") or sys.exit("MINIMAX_API_KEY is not set")
     base = os.environ.get("MINIMAX_BASE_URL", "https://api.minimax.io")
     body = {"model": MODEL, "text": text, "stream": False, "subtitle_enable": True, "subtitle_type": "word",
             "voice_setting": {"voice_id": voice, "speed": speed, "vol": 1, "pitch": 0},
             "audio_setting": {"sample_rate": 44100, "bitrate": 128000, "format": "mp3", "channel": 1}}
+    if pronounce:
+        body["pronunciation_dict"] = {"tone": list(pronounce)}
     req = urllib.request.Request(base + "/v1/t2a_v2", data=json.dumps(body).encode(),
                                  headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"})
-    r = json.load(urllib.request.urlopen(req, timeout=120))
+    with urllib.request.urlopen(req, timeout=120) as response:
+        r = json.load(response)
     if r.get("base_resp", {}).get("status_code") not in (0, None):
         sys.exit(f"TTS failed for 「{text}」: {r.get('base_resp')}")
     url = r["data"].get("subtitle_file")
     if not url:
         sys.exit(f"MiniMax returned no word timestamps for 「{text}」 (subtitle_file missing)")
-    subs = json.load(urllib.request.urlopen(url, timeout=60))
+    with urllib.request.urlopen(url, timeout=60) as response:
+        subs = json.load(response)
     for path, data in ((out_json, json.dumps(subs, ensure_ascii=False).encode()), (out_mp3, bytes.fromhex(r["data"]["audio"]))):
-        open(path + ".part", "wb").write(data)
+        with open(path + ".part", "wb") as cache:
+            cache.write(data)
         os.replace(path + ".part", path)
 
 
@@ -176,7 +208,7 @@ def units_of(text):
     return [u.lower() for u in UNIT.findall(text) if SPOKEN.match(u)]
 
 
-def words_from_engine(text, subs, offset):
+def words_from_engine(raw, subs, offset):
     """script units → times from the voice engine's word timestamps (character offsets into the line's text).
     A unit covered by several engine words takes the first; units that share one engine span (「0.5 MB」 read as
     「零点五兆字节」) spread over it in order."""
@@ -188,7 +220,12 @@ def words_from_engine(text, subs, offset):
             if base and b < base:
                 b, e = b + base, e + base
             tw.append((b, e, w["time_begin"] / 1000.0))
-    spans = [(m.group(0), m.start(), m.end()) for m in UNIT.finditer(text)]
+    text = shown(raw)
+    to_raw, k = [], 0                       # display index → raw index (the engine counts the markers too)
+    for m in PAUSE.finditer(raw):
+        to_raw += list(range(k, m.start())); k = m.end()
+    to_raw += list(range(k, len(raw) + 1))
+    spans = [(m.group(0), to_raw[m.start()], to_raw[m.end() - 1] + 1) for m in UNIT.finditer(text)]
     hits = [[k for k, (b, e, _) in enumerate(tw) if b < end and e > start] for _, start, end in spans]
     groups = {}
     for i, h in enumerate(hits):
@@ -242,7 +279,7 @@ def place_lines(texts, gaps, total):
     s0 = gaps[0][1] if gaps and gaps[0][0] <= 0.01 else 0.0
     s1 = gaps[-1][0] if gaps and gaps[-1][1] >= total - 0.01 else total
     inner = [(g0, g1) for g0, g1 in gaps if s0 < g0 and g1 < s1]
-    w = [sum(weight(u) for u in UNIT.findall(t)) + 0.2 for t in texts]
+    w = [line_weight(t) + 0.2 for t in texts]
     span = s1 - s0
     want = [x / sum(w) * span for x in w]
     if n == 1 or len(inner) < n - 1:
@@ -320,6 +357,8 @@ def main():
     D = os.path.abspath(a.topic)
     meta, chapters, end, recap, facts = parse(os.path.join(D, "script.md"))
     voice, speed = meta.get("voice", VOICE), float(meta.get("speed", SPEED))
+    # pronounce: 攒竹/(cuan2)(zhu2); 太阳/(tai4)(yang2)   — polyphones and terms, MiniMax pronunciation_dict format
+    pronounce = tuple(x.strip() for x in re.split(r"[;；]", meta.get("pronounce", "")) if x.strip())
     texts, owner = [], []          # every narration line in order, and its chapter index (None for the end line)
     for ci, c in enumerate(chapters):
         for s in c["lines"]: texts.append(s); owner.append(ci)
@@ -329,7 +368,7 @@ def main():
     print(f"{meta.get('title', os.path.basename(D))}: {len(chapters)} chapters, {n - (1 if end else 0)} lines" + (" + the end line" if end else ""))
     for i, (s, o) in enumerate(zip(texts, owner)):
         print(f"  {i + 1:>2} [{chapters[o]['key'] if o is not None else 'end'}] {s}")
-    est = LEAD + sum(sum(weight(u) for u in UNIT.findall(s)) + 0.2 + g for s, g in zip(texts, gaps))
+    est = LEAD + sum(line_weight(s) + 0.2 + g for s, g in zip(texts, gaps))
     rlen = float(recap["fields"].get("length", RECAP)) if recap else 0.0
     print(f"  estimated length ≈ {est:.0f} s narration" + (f" + {rlen:g} s recap = {est + rlen:.0f} s" if recap else "")
           + "  (预计时长，实际以配音为准)")
@@ -358,15 +397,15 @@ def main():
             print("  ! the recording has too few pauses to find every line — lines were spread by length; "
                   "leave a short pause between sentences for exact placement", file=sys.stderr)
         for i, (s, (b0, b1)) in enumerate(zip(texts, bounds)):
-            L = {"i": i + 1, "text": s, "start": round(b0, 3), "end": round(b1, 3)}
+            L = {"i": i + 1, "text": shown(s), "start": round(b0, 3), "end": round(b1, 3)}
             L["words"] = spread(L)
             lines.append(L)
         t, timing = total, "estimated"
         print("  word times are estimated from the recording's pauses (≈0.15 s); voice with MiniMax for exact ones")
     elif a.dry:
         for i, s in enumerate(texts):
-            dur = sum(weight(u) for u in UNIT.findall(s)) + 0.2
-            lines.append({"i": i + 1, "text": s, "start": round(t, 3), "end": round(t + dur, 3)})
+            dur = line_weight(s) + 0.2
+            lines.append({"i": i + 1, "text": shown(s), "start": round(t, 3), "end": round(t + dur, 3)})
             t += dur + gaps[i]
         for L in lines:
             L["words"] = dry_line(L)
@@ -376,16 +415,19 @@ def main():
     else:
         files, durs, subs = [], [], []
         for i, s in enumerate(texts):
-            stem = os.path.join(D, "audio", "tts", sha(MODEL, voice, speed, "words", s))
+            used = tuple(e for e in pronounce if e.split("/")[0] in s)   # only the entries this line needs
+            stem = os.path.join(D, "audio", "tts", sha(MODEL, voice, speed, "words", s, *used))
             if not (os.path.exists(stem + ".mp3") and os.path.exists(stem + ".json")):
-                print(f"  voice {i + 1}: {s}")
-                tts(s, voice, speed, stem + ".mp3", stem + ".json")
+                print(f"  voice {i + 1}: {shown(s)}")
+                tts(s, voice, speed, stem + ".mp3", stem + ".json", used)
             files.append(stem + ".mp3"); durs.append(round(probe(stem + ".mp3"), 3))
             subs.append(json.load(open(stem + ".json", encoding="utf-8")))
         assemble(files, gaps, os.path.join(D, "audio", "narration.wav"))
         normalize(os.path.join(D, "audio", "narration.wav"))
         for i, s in enumerate(texts):
-            L = {"i": i + 1, "text": s, "start": round(t, 3), "end": round(t + durs[i], 3)}
+            L = {"i": i + 1, "text": shown(s), "start": round(t, 3), "end": round(t + durs[i], 3)}
+            if s != L["text"]:
+                L["say"] = s                 # what was sent to the voice, pause markers included
             L["words"] = words_from_engine(s, subs[i], t)
             lines.append(L)
             t += durs[i] + gaps[i]

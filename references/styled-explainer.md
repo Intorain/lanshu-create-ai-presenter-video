@@ -1,7 +1,7 @@
 # Styled explainer route
 
-Read this file when the job's `creative.route` is `styled`: a performed explainer in one of nine visual styles, with
-no presenter. The styles carry the explanation on their own — the work is in performing every line well. The engine
+Read this file when the job's `creative.route` is `styled`: a performed explainer in one of twelve styles (nine visual
+styles and three narrative styles — 推演, 案卷, 小剧场 — whose look comes with a way of telling), with no presenter. The styles carry the explanation on their own — the work is in performing every line well. The engine
 lives in `explainer/`:
 `explainer/STYLES.md` to choose a style, `explainer/KITS.md` for the contract and tools, each style's
 `kits/<style>/starter/STARTER.md` for how to perform a beat, and `examples/kv-cache/<style>/` for a finished film.
@@ -50,9 +50,10 @@ python3 "$SKILL_DIR/scripts/init_job.py" --job-dir ~/Videos/kv-cache --route sty
   --explainer-style v3-notebook --topic "讲清楚 KV cache"
 ```
 
-If the user has not chosen a style, show them `explainer/STYLES.md` (attach or link its gallery image) and recommend
-two or three from the topic and audience, one reason each; or build drafts in all nine (below) and let them pick from
-a still grid. Settle the style before the script is locked — the script is written for it (next step).
+If the user has not chosen a style, show them `explainer/STYLES.md` (attach or link its two gallery images) and
+recommend two or three from the topic and audience, one reason each; or build drafts in the nine visual styles (below)
+and let them pick from a still grid. Settle the style before the script is locked — the script is written for it (next
+step); for a narrative style (V10–V12), adapt its suggested arc to the topic.
 
 ### content_locked
 
@@ -60,6 +61,15 @@ Write `story/script.md` for the chosen style — tone, sentence length, `speed:`
 "按风格写稿" table in `explainer/STYLES.md` — with the content rules of [generation.md](generation.md): chapters (`## key | 章节标题`), one narration line per text line, `> beat notes` under each chapter
 (the starters show them in the draft), `## end` with `emphasis:` for the closing line, `## recap` points, and a
 `## facts` block — the only facts the film may put on screen. See `explainer/stories/kv-cache/script.md`.
+
+For a narrative style, these arcs are useful starting points; adapt chapter count and order to the explanation:
+V10 推演 a question → the figure built step by step → the pattern
+→ the result and its cost; V11 案卷 the anomaly and suspects → evidence → the cause proven → the fix → the case closed
+(cause / fix / cost / lesson, facts sourced, illustrative numbers marked 「示意」); V12 小剧场 one life scene and one
+character: the misconception → a bill, a queue or an object comparison that shows the cause → the new way → the analogy
+mapped to the real term, closed in one sentence. The bundled `explainer/stories/kv-cache-reasoning`, `kv-cache-casefile`
+and `kv-cache-sitcom` are the same topic written in the three arcs. A sitcom's setting and characters can change
+with the topic; the demo's milk-tea shop is an example. Keep facts sourced and label illustrative numbers.
 
 ```bash
 python3 "$X/tools/story.py" story --check      # chapters, lines and the estimated length

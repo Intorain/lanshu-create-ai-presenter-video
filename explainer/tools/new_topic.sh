@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# Start one story in every style at once (or in the styles you name) — handy for choosing a style.
+# Start one story in the nine visual styles at once (or in the styles you name) — handy for choosing a style.
 # Usage: new_topic.sh <story> [style ...]        → <DEST_ROOT>/<style> for each style
+#   The narrative styles (v10-reasoning, v11-casefile, v12-sitcom) shape the script itself, so they are built only
+#   when named, from a script written in their arc: new_topic.sh <story> v10-reasoning v11-casefile v12-sitcom
 #   DEST_ROOT=./films (default)   JOBS=3 builds styles in parallel   FORCE=1 rebuilds
 # Each style is tools/new_film.sh; logs in <DEST_ROOT>/.logs/<style>.log. A style that fails under parallel load (the
 # heavy ones run a headless browser pass for their sound log) is retried once on its own.
 set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
 STORY="$1"; shift
-STYLES=("$@"); [[ ${#STYLES[@]} -gt 0 ]] || STYLES=($(ls "$ROOT/kits"))
+STYLES=("$@"); [[ ${#STYLES[@]} -gt 0 ]] || STYLES=($(ls "$ROOT/kits" | grep -E '^v[1-9]-'))
 DEST_ROOT="${DEST_ROOT:-$PWD/films}"
 mkdir -p "$DEST_ROOT/.logs"
 build() {

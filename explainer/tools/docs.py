@@ -12,7 +12,13 @@ import json, os, re, sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from story import parse, UNIT, SPOKEN  # noqa: E402
+from story import parse, UNIT, SPOKEN, PAUSE, shown  # noqa: E402
+
+
+def readable(raw):
+    """a script line for people: pause markers removed, paced lines marked"""
+    secs = sorted(set(PAUSE.findall(raw)))
+    return shown(raw) + (f"  （慢读：字间停顿 {'/'.join(secs)} 秒）" if secs else "")
 
 
 def main():
@@ -29,9 +35,9 @@ def main():
     n = 0
     for c in chapters:
         for s in c["lines"]:
-            n += 1; lines.append(f"{n}. {s}")
+            n += 1; lines.append(f"{n}. {readable(s)}")
     if end:
-        lines.append(f"{n + 1}. {end['lines'][0]}  （结尾金句）")
+        lines.append(f"{n + 1}. {readable(end['lines'][0])}  （结尾金句）")
     (docs / "SCRIPT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     b = [f"# Beat sheet · {title}", ""]
@@ -39,7 +45,7 @@ def main():
     for k, c in enumerate(chapters, 1):
         b.append(f"## {k}. {c['title'] or c['key']}  (`{c['key']}`)")
         for s in c["lines"]:
-            n += 1; b.append(f"- L{n}: {s}")
+            n += 1; b.append(f"- L{n}: {readable(s)}")
         for note in c["notes"]:
             b.append(f"  - beat: {note}")
         b.append("")

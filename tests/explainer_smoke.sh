@@ -59,6 +59,9 @@ python3 "$X/tools/srt.py" "$S" "$WORK/story.srt" >/dev/null || fail "srt.py"
 [[ "$(grep -c -- '-->' "$WORK/story.srt")" -ge 7 ]] || fail "srt.py wrote too few cues"
 pass "story.py writes a draft story.json; docs.py and srt.py read it"
 
+python3 "$SKILL_DIR/tests/story_timing.py" || fail "pause-marker and pronunciation regressions"
+pass "pause markers preserve engine word times; pronunciation stays optional"
+
 # --- every style's starter: sync, stamp, scripts parse
 HAVE_NODE=0; command -v node >/dev/null && HAVE_NODE=1
 DUR="$(jq -r .duration "$S")"
